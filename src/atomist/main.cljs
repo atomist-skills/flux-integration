@@ -26,12 +26,6 @@
             [goog.string.format])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(defn s->phase [s]
-  (keyword "k8.pod.phase" s))
-
-(defn s->state [s]
-  (keyword "k8.pod.container.state" s))
-
 (defn transact [handler]
   (fn [request]
     (go
@@ -40,7 +34,7 @@
                 :webhook
                 :body
                 (json/->obj))]
-        (log/info "flux event data " data)
+        (log/info "flux event data " (-> data :involvedObject :kind) (-> data :message) (-> data :reason) " -- " data)
         (<! (handler (assoc request :atomist/summary "flux")))))))
 
 (defn ^:export handler
