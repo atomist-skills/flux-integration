@@ -14,7 +14,7 @@
 
 {:description "This section supports markdown",
  :license "unknown",
- :displayName "flus integration",
+ :displayName "flux integration",
  :name "flux-integration",
  :author "slimslenderslacks",
  :integration true,
