@@ -27,7 +27,7 @@
             [goog.string.format])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(defn progress-message 
+(defn progress-message
   "namespace/name configured|created"
   [s]
   (->> s
@@ -46,45 +46,47 @@
           ;; Kustomization Progressing
           (and (= "Kustomization" (-> data :involvedObject :kind))
                (= "Progressing" (-> data :reason)))
-          (let [{:keys [message severity reason] 
+          (let [{:keys [message severity reason]
                  {:keys [commit_status revision]} :metadata
                  {:keys [namespace name uid apiVersion resourceVersion]} :involvedObject} data]
             ;; message contains Object updates
-            (log/infof "FLUX: Progressing %s" (progress-message message))
-            )
-          
+            (log/infof "FLUX: Progressing %s" (progress-message message)))
+
           ;; Kustomization ReconciliationSucceeded
+
+
           (and (= "Kustomization" (-> data :involvedObject :kind))
                (= "ReconciliationSucceeded" (-> data :reason)))
-          (let [{:keys [message severity reason] 
+          (let [{:keys [message severity reason]
                  {:keys [commit_status revision]} :metadata
                  {:keys [namespace name uid apiVersion resourceVersion]} :involvedObject} data]
-            (log/infof "FLUX:  Success %s" revision)
-            )
-          
+            (log/infof "FLUX:  Success %s" revision))
+
           ;; GitRepository fetching a revision
+
+
           (and (= "GitRepository" (-> data :involvedObject :kind))
                (= "info" (-> data :reason)))
-          (let [{:keys [message severity reason] 
+          (let [{:keys [message severity reason]
                  {:keys [namespace name uid apiVersion resourceVersion]} :involvedObject} data]
             ;; Fetched revision: main/0dd97825ece28867bd12e190b0fdcd9d5cf32dda
-            (log/infof "FLUX:  GitRepository %s" message)
-            )
+            (log/infof "FLUX:  GitRepository %s" message))
 
           ;; Artifact failed
+
+
           (and (= "Kustomization" (-> data :involvedObject :kind))
                (= "error" (-> data :severity)))
-          (let [{:keys [message severity reason] 
+          (let [{:keys [message severity reason]
                  {:keys [revision]} :metadata
                  {:keys [namespace name uid apiVersion resourceVersion]} :involvedObject} data]
-            (log/warnf "FLUX:  error %s %s" message revision)
-            )
+            (log/warnf "FLUX:  error %s %s" message revision))
 
           :else
-          (log/infof "FLUX: unknown event data %s:%s:%s -- %s" 
-                     (-> data :involvedObject :kind) 
-                     (-> data :message) 
-                     (-> data :reason) 
+          (log/infof "FLUX: unknown event data %s:%s:%s -- %s"
+                     (-> data :involvedObject :kind)
+                     (-> data :message)
+                     (-> data :reason)
                      data))
         (<! (handler (assoc request :atomist/summary "flux")))))))
 
