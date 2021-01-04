@@ -27,12 +27,12 @@
             [goog.string.format])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(defn progress-message
+(defn progress-message 
   "namespace/name configured|created"
   [s]
   (->> s
        (s/split-lines)
-       (map #(re-find #"(\w+)/(\w+) (.*)" %))))
+       (map #(re-find #"([\w_-]+)/([\w_-]+) (.*)" %))))
 
 (defn transact [handler]
   (fn [request]
@@ -46,49 +46,58 @@
           ;; Kustomization Progressing
           (and (= "Kustomization" (-> data :involvedObject :kind))
                (= "Progressing" (-> data :reason)))
-          (let [{:keys [message severity reason]
+          (let [{:keys [message severity reason reportingInstance] 
                  {:keys [commit_status revision]} :metadata
                  {:keys [namespace name uid apiVersion resourceVersion]} :involvedObject} data]
             ;; message contains Object updates
-            (log/infof "FLUX: Progressing %s" (progress-message message)))
-
+            (log/infof "FLUX: Progressing %s on %s (%s,%s,%s)" (progress-message message) revision name reportingInstance uid)
+            (<! (api/transact request [{:schema/entity-type :flux/reconciliation
+                                        :flux.reconciliation/uid uid
+                                        :flux.reconciliation/name name
+                                        :flux.reconciliation/status (keyword "flux.reconciliation.status" reason)
+                                        :flux.reconciliation/message message
+                                        :flux.reconciliation/sha revision}])))
+          
           ;; Kustomization ReconciliationSucceeded
-
-
           (and (= "Kustomization" (-> data :involvedObject :kind))
                (= "ReconciliationSucceeded" (-> data :reason)))
-          (let [{:keys [message severity reason]
+          (let [{:keys [message severity reason reportingInstance] 
                  {:keys [commit_status revision]} :metadata
                  {:keys [namespace name uid apiVersion resourceVersion]} :involvedObject} data]
-            (log/infof "FLUX:  Success %s" revision))
-
+            (log/infof "FLUX:  Success %s (%s,%s,%s)" revision name reportingInstance uid)
+            (<! (api/transact request [{:schema/entity-type :flux/reconciliation
+                                        :flux.reconciliation/uid uid
+                                        :flux.reconciliation/name name
+                                        :flux.reconciliation/status (keyword "flux.reconciliation.status" reason)
+                                        :flux.reconciliation/message message
+                                        :flux.reconciliation/sha revision}])))
+          
           ;; GitRepository fetching a revision
-
-
           (and (= "GitRepository" (-> data :involvedObject :kind))
                (= "info" (-> data :reason)))
-          (let [{:keys [message severity reason]
+          (let [{:keys [message severity reason reportingInstance] 
                  {:keys [namespace name uid apiVersion resourceVersion]} :involvedObject} data]
             ;; Fetched revision: main/0dd97825ece28867bd12e190b0fdcd9d5cf32dda
-            (log/infof "FLUX:  GitRepository %s" message))
+            (log/infof "FLUX:  GitRepository %s (%s,%s,%s)" message name reportingInstance uid)
+            )
 
           ;; Artifact failed
-
-
           (and (= "Kustomization" (-> data :involvedObject :kind))
                (= "error" (-> data :severity)))
-          (let [{:keys [message severity reason]
+          (let [{:keys [message severity reason reportingInstance] 
                  {:keys [revision]} :metadata
                  {:keys [namespace name uid apiVersion resourceVersion]} :involvedObject} data]
-            (log/warnf "FLUX:  error %s %s" message revision))
+            (log/warnf "FLUX:  error %s %s (%s,%s,%s)" message revision name reportingInstance uid)
+            )
 
           :else
-          (log/infof "FLUX: unknown event data %s:%s:%s -- %s"
-                     (-> data :involvedObject :kind)
-                     (-> data :message)
-                     (-> data :reason)
+          (log/infof "FLUX: unknown event data %s:%s:%s -- %s %s" 
+                     (-> data :involvedObject :kind) 
+                     (-> data :message) 
+                     (-> data :reason) 
+                     (-> data :reportingInstance)
                      data))
-        (<! (handler (assoc request :atomist/summary "flux")))))))
+        (<! (handler (assoc request :atomist/summary "flux" :visibility :hidden)))))))
 
 (defn ^:export handler
   [data sendreponse]
