@@ -12,4 +12,24 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-{:attributes []}
+{:attributes {:flux/reconciliation {:db.entity/attrs [:flux.reconciliation/uid]}
+              :flux.reconciliation/uid {:db/valueType :db.type/string
+                                        :db/cardinality :db.cardinality/one}
+              :flux.reconciliation/name {:db/valueType :db.type/string
+                                         :db/cardinality :db.cardinality/one}
+              :flux.reconciliation/sha {:db/valueType :db.type/ref
+                                        :db/cardinality :db.cardinality/one}
+              :flux.reconciliation/message {:db/valueType :db.type/string
+                                            :db/cardinality :db.cardinality/many}
+              :flux.reconciliation/status {:db/valueType :db.type/ref
+                                           :db/cardinality :db.cardinality/one}
+              :flux.reconciliation.status/ReconciliationSucceeded {}
+              :flux.reconciliation.status/ReconciliationFailed {}
+              :flux.reconciliation.status/Progressing {}
+              :flux.reconciliation.status/Suspended {}
+              :flux.reconciliation.status/DependencyNotReady {}
+              :flux.reconciliation.status/ArtifactFailed {}
+              :flux.reconciliation.status/BuildFailed {}
+              :flux.reconciliation.status/HealthCheckFailed {}
+              :flux.reconciliation.status/ValidationFailed {}
+              }}
