@@ -34,6 +34,41 @@
        (s/split-lines)
        (map #(re-find #"([\w_-]+)/([\w_-]+) (.*)" %))))
 
+(defn commit
+  "lookup a commit ref"
+  [org repo sha]
+  [{:schema/entity-type :git/org
+    :schema/entity "$org"
+    :git.org/name org}
+   {:schema/entity-type :git/repo
+    :schema/entity "$repo"
+    :git.repo/name repo
+    :git.repo/org "$org"}
+   {:schema/entity-type :git/commit
+    :schema/entity "$commit"
+    :git.commit/sha sha
+    :git.provider/url "https://github.com"
+    :git.commit/repo "$repo"}])
+
+(defn reconciliation
+  "parse flux data and produce a reconciliation entity"
+  [{:keys [message severity reason reportingInstance]
+    {:keys [commit_status revision]} :metadata
+    {:keys [namespace name uid apiVersion resourceVersion]} :involvedObject}]
+  {:schema/entity-type :flux/reconciliation
+   :flux.reconciliation/uid uid
+   :flux.reconciliation/name name
+   :flux.reconciliation/status (keyword "flux.reconciliation.status" reason)
+   :flux.reconciliation/message message
+   :flux.reconciliation/sha "$commit"})
+
+(defn revision->sha 
+  "extract a sha from a flux revision
+     return sha or nil"
+  [revision]
+  (if revision
+    (second (re-find #".*/(.*)" revision))))
+
 (defn transact [handler]
   (fn [request]
     (go
@@ -46,31 +81,25 @@
           ;; Kustomization Progressing
           (and (= "Kustomization" (-> data :involvedObject :kind))
                (= "Progressing" (-> data :reason)))
-          (let [{:keys [message severity reason reportingInstance]
+          (let [{:keys [message reportingInstance]
                  {:keys [commit_status revision]} :metadata
-                 {:keys [namespace name uid apiVersion resourceVersion]} :involvedObject} data]
+                 {:keys [name uid]} :involvedObject} data]
             ;; message contains Object updates
             (log/infof "FLUX: Progressing %s on %s (%s,%s,%s)" (progress-message message) revision name reportingInstance uid)
-            (<! (api/transact request [{:schema/entity-type :flux/reconciliation
-                                        :flux.reconciliation/uid uid
-                                        :flux.reconciliation/name name
-                                        :flux.reconciliation/status (keyword "flux.reconciliation.status" reason)
-                                        :flux.reconciliation/message message
-                                        :flux.reconciliation/sha revision}])))
+            (<! (api/transact request (concat
+                                       (commit "atomisthq" "flux-test" (revision->sha revision))
+                                       [(reconciliation data)]))))
 
           ;; Kustomization ReconciliationSucceeded
           (and (= "Kustomization" (-> data :involvedObject :kind))
                (= "ReconciliationSucceeded" (-> data :reason)))
-          (let [{:keys [message severity reason reportingInstance]
+          (let [{:keys [reportingInstance]
                  {:keys [commit_status revision]} :metadata
-                 {:keys [namespace name uid apiVersion resourceVersion]} :involvedObject} data]
+                 {:keys [name uid]} :involvedObject} data]
             (log/infof "FLUX:  Success %s (%s,%s,%s)" revision name reportingInstance uid)
-            (<! (api/transact request [{:schema/entity-type :flux/reconciliation
-                                        :flux.reconciliation/uid uid
-                                        :flux.reconciliation/name name
-                                        :flux.reconciliation/status (keyword "flux.reconciliation.status" reason)
-                                        :flux.reconciliation/message message
-                                        :flux.reconciliation/sha revision}])))
+            (<! (api/transact request (concat
+                                       (commit "atomisthq" "flux-test" (revision->sha revision))
+                                       [(reconciliation data)]))))
 
           ;; GitRepository fetching a revision
           (and (= "GitRepository" (-> data :involvedObject :kind))
@@ -81,8 +110,6 @@
             (log/infof "FLUX:  GitRepository %s (%s,%s,%s)" message name reportingInstance uid))
 
           ;; Artifact failed
-
-
           (and (= "Kustomization" (-> data :involvedObject :kind))
                (= "error" (-> data :severity)))
           (let [{:keys [message severity reason reportingInstance]
