@@ -62,7 +62,7 @@
    :flux.reconciliation/message message
    :flux.reconciliation/sha "$commit"})
 
-(defn revision->sha 
+(defn revision->sha
   "extract a sha from a flux revision
      return sha or nil"
   [revision]
