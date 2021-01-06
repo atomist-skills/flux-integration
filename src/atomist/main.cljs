@@ -87,7 +87,7 @@
             ;; message contains Object updates
             (log/infof "FLUX: Progressing %s on %s (%s,%s,%s)" (progress-message message) revision name reportingInstance uid)
             (<! (api/transact request (concat
-                                       (commit "atomisthq" "flux-test" (revision->sha revision))
+                                       (commit "slimslender" "flux-test" (revision->sha revision))
                                        [(reconciliation data)]))))
 
           ;; Kustomization ReconciliationSucceeded
@@ -98,7 +98,7 @@
                  {:keys [name uid]} :involvedObject} data]
             (log/infof "FLUX:  Success %s (%s,%s,%s)" revision name reportingInstance uid)
             (<! (api/transact request (concat
-                                       (commit "atomisthq" "flux-test" (revision->sha revision))
+                                       (commit "slimslender" "flux-test" (revision->sha revision))
                                        [(reconciliation data)]))))
 
           ;; GitRepository fetching a revision
