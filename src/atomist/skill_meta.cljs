@@ -3,6 +3,6 @@
 
 (def module-name "flux-integration")
 (def path ".")
-(def version "0.1.4")
-(def tag "0.1.4")
-(def generated-at "2021-01-05T05:46:19Z")
+(def version "0.1.6")
+(def tag "0.1.6")
+(def generated-at "2021-01-06T03:16:36Z")
