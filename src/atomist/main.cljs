@@ -124,10 +124,10 @@
                      (-> data :reason)
                      (-> data :reportingInstance)
                      data))
-        (<! (handler (assoc request 
-                            :atomist/status 
-                            {:code 0 
-                             :reason "flux transacts" 
+        (<! (handler (assoc request
+                            :atomist/status
+                            {:code 0
+                             :reason "flux transacts"
                              :visibility :hidden})))))))
 
 (defn ^:export handler
