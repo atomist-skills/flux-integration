@@ -124,15 +124,19 @@
                      (-> data :reason)
                      (-> data :reportingInstance)
                      data))
-        (<! (handler (assoc request :atomist/summary "flux" :visibility :hidden)))))))
+        (<! (handler (assoc request 
+                            :atomist/status 
+                            {:code 0 
+                             :reason "flux transacts" 
+                             :visibility :hidden})))))))
 
 (defn ^:export handler
   [data sendreponse]
   (api/make-request
    data
    sendreponse
-   (-> (api/finished :message "----> event handler finished")
+   (-> (api/finished)
        (transact)
        (api/log-event)
-       (api/status :send-status (fn [{:atomist/keys [summary]}] summary)))))
+       (api/status))))
 
