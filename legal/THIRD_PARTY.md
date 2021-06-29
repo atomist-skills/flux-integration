@@ -19,7 +19,7 @@ This page details all runtime dependencies of `atomist-skill`.
 | [ISC](#isc)                            | 43    |
 | [LGPL-3.0-or-later](#lgpl-30-or-later) | 1     |
 | [MIT AND Zlib](#mit-and-zlib)          | 1     |
-| [MIT](#mit)                            | 582   |
+| [MIT](#mit)                            | 584   |
 | [Public Domain](#public-domain)        | 1     |
 | [Python-2.0](#python-20)               | 1     |
 | [UNKNOWN](#unknown)                    | 1     |
@@ -688,6 +688,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `picomatch`                                          | `2.2.2`        | Jon Schlinkert                 | [https://github.com/micromatch/picomatch](https://github.com/micromatch/picomatch)                                                                                                                   |
 | `pluralize`                                          | `8.0.0`        | Blake Embrey                   | [https://github.com/blakeembrey/pluralize](https://github.com/blakeembrey/pluralize)                                                                                                                 |
 | `prepend-http`                                       | `2.0.0`        | Sindre Sorhus                  | [https://github.com/sindresorhus/prepend-http](https://github.com/sindresorhus/prepend-http)                                                                                                         |
+| `prettier`                                           | `2.3.2`        | James Long                     | [https://github.com/prettier/prettier](https://github.com/prettier/prettier)                                                                                                                         |
 | `process-nextick-args`                               | `2.0.1`        |                                | [https://github.com/calvinmetcalf/process-nextick-args](https://github.com/calvinmetcalf/process-nextick-args)                                                                                       |
 | `promise`                                            | `7.3.1`        | ForbesLindesay                 | [https://github.com/then/promise](https://github.com/then/promise)                                                                                                                                   |
 | `protocols`                                          | `1.4.8`        | Ionică Bizău                   | [https://github.com/IonicaBizau/protocols](https://github.com/IonicaBizau/protocols)                                                                                                                 |
@@ -799,6 +800,7 @@ MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licen
 | `wrap-ansi`                                          | `6.2.0`        | Sindre Sorhus                  | [https://github.com/chalk/wrap-ansi](https://github.com/chalk/wrap-ansi)                                                                                                                             |
 | `wrap-ansi`                                          | `7.0.0`        | Sindre Sorhus                  | [https://github.com/chalk/wrap-ansi](https://github.com/chalk/wrap-ansi)                                                                                                                             |
 | `ws`                                                 | `7.4.5`        | Einar Otto Stangvik            | [https://github.com/websockets/ws](https://github.com/websockets/ws)                                                                                                                                 |
+| `ws`                                                 | `7.5.1`        | Einar Otto Stangvik            | [https://github.com/websockets/ws](https://github.com/websockets/ws)                                                                                                                                 |
 | `xdg-basedir`                                        | `4.0.0`        | Sindre Sorhus                  | [https://github.com/sindresorhus/xdg-basedir](https://github.com/sindresorhus/xdg-basedir)                                                                                                           |
 | `yargs`                                              | `15.4.1`       |                                | [https://github.com/yargs/yargs](https://github.com/yargs/yargs)                                                                                                                                     |
 | `yargs`                                              | `16.2.0`       |                                | [https://github.com/yargs/yargs](https://github.com/yargs/yargs)                                                                                                                                     |
