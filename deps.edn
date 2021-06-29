@@ -14,14 +14,14 @@
 
 {:paths ["src"],
  :deps
- {org.clojure/clojurescript {:mvn/version "1.10.844"},
-  com.atomist/api-cljs {:mvn/version "0.5.67"}},
+ {org.clojure/clojurescript {:mvn/version "1.10.866"},
+  com.atomist/api-cljs {:mvn/version "0.5.69"}},
  :aliases
  {:dev
   {:extra-deps
    {org.clojure/clojure {:mvn/version "1.10.3"},
-    org.clojure/clojurescript {:mvn/version "1.10.844"},
-    thheller/shadow-cljs {:mvn/version "2.12.5"}},
+    org.clojure/clojurescript {:mvn/version "1.10.866"},
+    thheller/shadow-cljs {:mvn/version "2.14.2"}},
    :extra-paths ["dev" "/Users/slim/atmhq/api-cljs/src"]},
   :datomic-repl {:extra-deps {com.datomic/client-cloud {:mvn/version "0.8.102"}
                               clj-http {:mvn/version "3.10.3"}}
